@@ -214,7 +214,7 @@ class ChatterboxTurboTTS:
 
         return wav
 
-    def prepare_conditionals(self, wav_fpath, exaggeration=0.5, norm_loudness=True):
+    def prepare_conditionals(self, wav_fpath, exaggeration=0.0, norm_loudness=True):
         ## Load and norm reference wav
         s3gen_ref_wav, _sr = librosa.load(wav_fpath, sr=S3GEN_SR)
 
@@ -257,6 +257,7 @@ class ChatterboxTurboTTS:
         temperature=0.8,
         top_k=1000,
         norm_loudness=True,
+        disable_progressbar=True,
     ):
         if audio_prompt_path:
             self.prepare_conditionals(audio_prompt_path, exaggeration=exaggeration, norm_loudness=norm_loudness)
@@ -278,6 +279,7 @@ class ChatterboxTurboTTS:
             top_k=top_k,
             top_p=top_p,
             repetition_penalty=repetition_penalty,
+            disable_progressbar=disable_progressbar,
         )
 
         # Remove OOV tokens and add silence to end
@@ -292,5 +294,5 @@ class ChatterboxTurboTTS:
             n_cfm_timesteps=2,
         )
         wav = wav.squeeze(0).detach().cpu().numpy()
-        watermarked_wav = self.watermarker.apply_watermark(wav, sample_rate=self.sr)
-        return torch.from_numpy(watermarked_wav).unsqueeze(0)
+        #watermarked_wav = self.watermarker.apply_watermark(wav, sample_rate=self.sr)
+        return torch.from_numpy(wav).unsqueeze(0)
